@@ -4,14 +4,13 @@ server:
 spring:
   application:
     name: gateway-service
-
   security:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://localhost:8484/auth/realms/master
+          jwk-set-uri: http://localhost:8282/realms/specific-group-realm/protocol/openid-connect/certs
+          issuer-uri: http://localhost:8282/realms/specific-group-realm
           #http://keycloak:8484/auth/realms/specific-group-realm
-
   cloud:
     gateway:
       discovery:
@@ -23,7 +22,6 @@ spring:
           uri: lb://authentication-service/
           predicates:
             - Path=/*/*/user/**
-
 eureka:
   instance:
     hostname: localhost

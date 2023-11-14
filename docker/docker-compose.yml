@@ -1,36 +1,58 @@
 version: "3.8"
 
 services:
-
-  postgres-keycloak:
-    container_name: postgres-keycloak
+  keycloak-postgres:
     image: postgres:latest
+    container_name: keycloak-postgres
+    restart: on-failure
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: keycloak_db
+      POSTGRES_DB: postgres
+    healthcheck:
+      test: pg_isready -d postgres
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
     ports:
-      - "5432:5432"
-    restart: unless-stopped
+      - ${KC_POSTGRES_PORT_MAPPING:-5435}:5432
+    deploy:
+      resources:
+        limits:
+          memory: 256M
     networks:
       - specific-group-services
 
   keycloak:
-    image: jboss/keycloak
+    image: quay.io/keycloak/keycloak:22.0.5
     container_name: keycloak
-    restart: always
+    command:
+      - start --auto-build --db postgres --hostname-strict-https false --hostname-strict false --proxy edge --http-enabled true --import-realm --spi-user-profile-legacy-user-profile-read-only-attributes *_RES_ACCESS_MODE
     environment:
-      DB_VENDOR: POSTGRES
-      DB_ADDR: postgres-keycloak
-      DB_DATABASE: keycloak_db
-      DB_USER: postgres
-      DB_PASSWORD: postgres
-      KEYCLOAK_USER: admin
-      KEYCLOAK_PASSWORD: admin
+      KC_DB_URL: jdbc:postgresql://keycloak-postgres:5432/postgres
+      KC_DB_USERNAME: postgres
+      KC_DB_PASSWORD: postgres
+      KC_DB_SCHEMA: public
+      KC_FEATURES: preview
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+#    volumes:
+#      - type: bind
+#        source: ./realm-export.json
+#        target: /opt/keycloak/data/import/realm-export.json
+#        read_only: true
     ports:
-      - "8484:8080"
+      - 8282:8080
     depends_on:
-      - postgres-keycloak
+      keycloak-postgres:
+        condition: service_healthy
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://0.0.0.0:8080/realms/master" ]
+      start_period: 10s
+      interval: 30s
+      retries: 3
+      timeout: 5s
     networks:
       - specific-group-services
 
