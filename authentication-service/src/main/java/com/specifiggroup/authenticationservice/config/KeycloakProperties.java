@@ -1,0 +1,32 @@
+package com.specifiggroup.authenticationservice.config;
+
+import lombok.Getter;
+import lombok.Setter;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.stereotype.Component;
+
+@Getter
+@Setter
+@Component
+@ConfigurationProperties(prefix = "keycloak")
+public class KeycloakProperties {
+    private String serverUrl;
+    private String realm;
+    private Client client;
+    private String username;
+    private String password;
+    private Token token;
+
+    @Getter
+    @Setter
+    public static class Client {
+        private String id;
+        private String secret;
+    }
+
+    @Getter
+    @Setter
+    public static class Token {
+        private String endpoint;
+    }
+}

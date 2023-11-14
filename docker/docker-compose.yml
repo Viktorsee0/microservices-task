@@ -1,0 +1,100 @@
+version: "3.8"
+
+services:
+
+  postgres-keycloak:
+    container_name: postgres-keycloak
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: keycloak_db
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+    networks:
+      - specific-group-services
+
+  keycloak:
+    image: jboss/keycloak
+    container_name: keycloak
+    restart: always
+    environment:
+      DB_VENDOR: POSTGRES
+      DB_ADDR: postgres-keycloak
+      DB_DATABASE: keycloak_db
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      KEYCLOAK_USER: admin
+      KEYCLOAK_PASSWORD: admin
+    ports:
+      - "8484:8080"
+    depends_on:
+      - postgres-keycloak
+    networks:
+      - specific-group-services
+
+  elasticsearch:
+    container_name: elasticsearch
+    image: elasticsearch:8.11.0
+    environment:
+      - discovery.type=single-node
+      - ELASTICSEARCH_USERNAME=elastic
+      - ELASTIC_PASSWORD=password
+    ports:
+      - "9200:9200"
+    networks:
+      - specific-group-services
+
+  logstash:
+    container_name: logstash
+    image: logstash:8.11.0
+    volumes:
+      - ./lgstash.conf:/usr/share/logstash/pipeline/lgstash.conf
+    environment:
+      - ELASTICSEARCH_HOST=elasticsearch
+      - ELASTICSEARCH_PORT=9200
+    ports:
+      - "5000:5000"
+    networks:
+      - specific-group-services
+
+  kibana:
+    container_name: kibana
+    image: kibana:8.11.0
+    ports:
+      - "5601:5601"
+    environment:
+      - ELASTICSEARCH_HOST=elasticsearch
+      - ELASTICSEARCH_PORT=9200
+      - ELASTICSEARCH_SERVICE_ACCOUNT_TOKEN=eyJ2ZXIiOiI4LjExLjAiLCJhZHIiOlsiMTcyLjMwLjAuNDo5MjAwIl0sImZnciI6ImUyMDNlOTRjYjljOTg3MjhlZmZiNzIxMWM1NmM1NWE2OTZmMGZjOGJjMTBmMzk2ZWJmMGEzYmExNmVhMWNlMTIiLCJrZXkiOiJKMC02eUlzQlF5N0dHRTJEd3BxZTpWUDQ0UmJxQlF2T0VzVEdzRFdYVmpBIn0=
+      - SERVER_NAME=kibana
+    depends_on:
+      - elasticsearch
+    networks:
+      - specific-group-services
+
+#    bin/elasticsearch-create-enrollment-token -s kibana
+networks:
+  specific-group-services:
+    driver: bridge
+
+
+#  eureka:
+#    build: eureka
+#    container_name: eureka-service
+#    ports:
+#      - "8761:8761"
+#    environment:
+#      SERVER_PORT: "8761"
+#
+#  gateway:
+#    build: gateway
+#    container_name: gateway-service
+#    ports:
+#      - "8080:8080"
+#    environment:
+#      SERVER_PORT: "8080"
+#    depends_on:
+#      - eureka
+#      - keycloak
