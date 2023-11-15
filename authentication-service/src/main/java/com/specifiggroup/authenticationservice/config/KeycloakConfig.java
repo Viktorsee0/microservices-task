@@ -1,7 +1,6 @@
 package com.specifiggroup.authenticationservice.config;
 
 import lombok.RequiredArgsConstructor;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.KeycloakBuilder;
@@ -21,19 +20,16 @@ public class KeycloakConfig {
                 .serverUrl(properties.getServerUrl())
                 .realm(properties.getRealm())
                 .clientId(properties.getClient().getId())
-                .clientSecret(properties.getClient().getSecret())
+//                .clientSecret(properties.getClient().getSecret())
                 .grantType(OAuth2Constants.PASSWORD)
                 .username(properties.getUsername())
                 .password(properties.getPassword())
-                .resteasyClient(new ResteasyClientBuilder()
-                        .connectionPoolSize(10)
-                        .build())
                 .build();
     }
 
     @Bean
     public UsersResource getUserResource() {
-        RealmResource realmResource = keycloak().realm(properties.getRealm());
+        RealmResource realmResource = keycloak().realm("specific-group-realm");
         return realmResource.users();
     }
 }

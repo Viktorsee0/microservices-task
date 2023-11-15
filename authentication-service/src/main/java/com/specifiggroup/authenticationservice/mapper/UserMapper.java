@@ -35,6 +35,13 @@ public interface UserMapper {
     @Mapping(source = "lastName", target = "lastname")
     UserResponseDTO toResponseDTO(UserRepresentation representation);
 
+    @Mapping(source = "id", target = "id")
+    @Mapping(source = "username", target = "username")
+    @Mapping(source = "email", target = "email")
+    @Mapping(source = "firstName", target = "firstname")
+    @Mapping(source = "lastName", target = "lastname")
+    List<UserResponseDTO> toResponseDTOS(List<UserRepresentation> representations);
+
     default List<CredentialRepresentation> createPasswordCredentials(String password) {
         CredentialRepresentation passwordCredentials = new CredentialRepresentation();
         passwordCredentials.setTemporary(false);

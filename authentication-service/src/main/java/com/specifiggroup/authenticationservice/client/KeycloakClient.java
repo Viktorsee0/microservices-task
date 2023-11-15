@@ -26,8 +26,8 @@ public class KeycloakClient {
 
         MultiValueMap<String, String> requestBody = new LinkedMultiValueMap<>();
         requestBody.add("grant_type", "password");
-        requestBody.add("client_id", properties.getClient().getId());
-        requestBody.add("client_secret", properties.getClient().getSecret());
+        requestBody.add("client_id", properties.getToken().getClient());
+        requestBody.add("client_secret", properties.getToken().getSecret());
         requestBody.add("username", username);
         requestBody.add("password", password);
 

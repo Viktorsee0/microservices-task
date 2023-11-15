@@ -36,7 +36,11 @@ dependencies {
 	implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation 'org.keycloak:keycloak-admin-client:15.0.2'
+
+	implementation 'org.keycloak:keycloak-admin-client:22.0.5'
+	compileOnly 'org.keycloak:keycloak-servlet-filter-adapter:22.0.5'
+
+
 	annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 

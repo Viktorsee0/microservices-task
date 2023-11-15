@@ -20,6 +20,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 import static org.springframework.http.HttpStatus.NO_CONTENT;
 
 @Slf4j
@@ -44,6 +46,12 @@ public class UserController {
                                             @PathVariable("userName") String username) {
         log.info("Getting an user by username: {}", username);
         return ResponseEntity.ok(userService.getUser(username));
+    }
+
+    @GetMapping()
+    public ResponseEntity<List<UserResponseDTO>> getUsers() {
+        log.info("Getting all users");
+        return ResponseEntity.ok(userService.getUsers());
     }
 
     @PutMapping(path = "/{userId}")

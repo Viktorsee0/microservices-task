@@ -21,12 +21,13 @@ public class KeycloakProperties {
     @Setter
     public static class Client {
         private String id;
-        private String secret;
     }
 
     @Getter
     @Setter
     public static class Token {
         private String endpoint;
+        private String client;
+        private String secret;
     }
 }

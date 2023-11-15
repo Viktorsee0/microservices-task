@@ -9,6 +9,8 @@ import org.keycloak.admin.client.resource.UsersResource;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
@@ -25,6 +27,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponseDTO getUser(String userName) {
         return mapper.toResponseDTO(usersResource.search(userName).get(0));
+    }
+
+    @Override
+    public List<UserResponseDTO> getUsers() {
+       return mapper.toResponseDTOS(usersResource.list());
     }
 
     @Override
