@@ -27,8 +27,6 @@ services:
   keycloak:
     image: quay.io/keycloak/keycloak:22.0.5
     container_name: keycloak
-    command:
-      - start --auto-build --db postgres --hostname-strict-https false --hostname-strict false --proxy edge --http-enabled true --import-realm --spi-user-profile-legacy-user-profile-read-only-attributes *_RES_ACCESS_MODE
     environment:
       KC_DB_URL: jdbc:postgresql://keycloak-postgres:5432/postgres
       KC_DB_USERNAME: postgres
@@ -37,11 +35,17 @@ services:
       KC_FEATURES: preview
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
-#    volumes:
-#      - type: bind
-#        source: ./realm-export.json
-#        target: /opt/keycloak/data/import/realm-export.json
-#        read_only: true
+    command:
+      - start-dev
+      - --auto-build
+      - --db postgres
+      - --hostname-strict-https false
+      - --hostname-strict false
+      - --proxy edge
+      - --http-enabled true
+      - --import-realm
+    volumes:
+      - ./configs/realm.json:/opt/keycloak/data/import/realm.json
     ports:
       - 8282:8080
     depends_on:
@@ -72,7 +76,7 @@ services:
     container_name: logstash
     image: logstash:8.11.0
     volumes:
-      - ./lgstash.conf:/usr/share/logstash/pipeline/lgstash.conf
+      - ./configs/logstash.conf:/usr/share/logstash/pipeline/logstash.conf
     environment:
       - ELASTICSEARCH_HOST=elasticsearch
       - ELASTICSEARCH_PORT=9200
