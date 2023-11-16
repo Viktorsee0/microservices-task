@@ -8,9 +8,9 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          jwk-set-uri: http://localhost:8282/realms/specific-group-realm/protocol/openid-connect/certs
-          issuer-uri: http://localhost:8282/realms/specific-group-realm
-          #http://keycloak:8484/auth/realms/specific-group-realm
+            jwk-set-uri: http://localhost:8282/realms/specific-group-realm/protocol/openid-connect/certs
+            issuer-uri: http://localhost:8282/realms/specific-group-realm
+
   cloud:
     gateway:
       discovery:
@@ -29,7 +29,7 @@ eureka:
     register-with-eureka: true
     fetch-registry: true
     service-url:
-      defaultZone: http://localhost:8761/eureka #http://eureka-service:8761/eureka
+      defaultZone: http://localhost:8761/eureka
 management:
   endpoint:
     gateway:

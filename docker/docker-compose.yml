@@ -45,7 +45,7 @@ services:
       - --http-enabled true
       - --import-realm
     volumes:
-      - ./configs/realm.json:/opt/keycloak/data/import/realm.json
+      - ./keycloak/realm.json:/opt/keycloak/data/import/realm.json
     ports:
       - 8282:8080
     depends_on:
@@ -60,51 +60,87 @@ services:
     networks:
       - specific-group-services
 
-  elasticsearch:
-    container_name: elasticsearch
-    image: elasticsearch:8.11.0
+  setup:
+    build:
+      context: setup/
+      args:
+        ELASTIC_VERSION: ${ELASTIC_VERSION}
+    init: true
+    volumes:
+      - ./setup/entrypoint.sh:/entrypoint.sh:ro,Z
+      - ./setup/helpers.sh:/helpers.sh:ro,Z
+      - ./setup/roles:/roles:ro,Z
+      - setup:/state:Z
     environment:
-      - discovery.type=single-node
-      - ELASTICSEARCH_USERNAME=elastic
-      - ELASTIC_PASSWORD=password
+      ELASTIC_PASSWORD: ${ELASTIC_PASSWORD:-}
+      LOGSTASH_INTERNAL_PASSWORD: ${LOGSTASH_INTERNAL_PASSWORD:-}
+      KIBANA_SYSTEM_PASSWORD: ${KIBANA_SYSTEM_PASSWORD:-}
+      METRICBEAT_INTERNAL_PASSWORD: ${METRICBEAT_INTERNAL_PASSWORD:-}
+      FILEBEAT_INTERNAL_PASSWORD: ${FILEBEAT_INTERNAL_PASSWORD:-}
+      HEARTBEAT_INTERNAL_PASSWORD: ${HEARTBEAT_INTERNAL_PASSWORD:-}
+      MONITORING_INTERNAL_PASSWORD: ${MONITORING_INTERNAL_PASSWORD:-}
+      BEATS_SYSTEM_PASSWORD: ${BEATS_SYSTEM_PASSWORD:-}
+    networks:
+      - specific-group-services
+    depends_on:
+      - elasticsearch
+
+  elasticsearch:
+    image: elasticsearch:${ELASTIC_VERSION:-}
+    volumes:
+      - ./elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro,Z
+      - elasticsearch:/usr/share/elasticsearch/data:Z
     ports:
-      - "9200:9200"
+      - 9200:9200
+      - 9300:9300
+    environment:
+      node.name: elasticsearch
+      ES_JAVA_OPTS: -Xms512m -Xmx512m
+      ELASTIC_PASSWORD: ${ELASTIC_PASSWORD:-}
+      discovery.type: single-node
     networks:
       - specific-group-services
 
   logstash:
-    container_name: logstash
-    image: logstash:8.11.0
+    image: logstash:${ELASTIC_VERSION}
     volumes:
-      - ./configs/logstash.conf:/usr/share/logstash/pipeline/logstash.conf
-    environment:
-      - ELASTICSEARCH_HOST=elasticsearch
-      - ELASTICSEARCH_PORT=9200
+      - ./logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml
+      - ./logstash/pipeline:/usr/share/logstash/pipeline
+      -  /mnt/c/temp/logs:/usr/share/logstash/logs
     ports:
-      - "5000:5000"
+      - 5044:5044
+      - 50000:50000/tcp
+      - 50000:50000/udp
+      - 9600:9600
+    environment:
+      LOG_LEVEL: debug
+      LS_JAVA_OPTS: -Xms256m -Xmx256m
+      LOGSTASH_INTERNAL_PASSWORD: ${LOGSTASH_INTERNAL_PASSWORD:-}
     networks:
       - specific-group-services
-
-  kibana:
-    container_name: kibana
-    image: kibana:8.11.0
-    ports:
-      - "5601:5601"
-    environment:
-      - ELASTICSEARCH_HOST=elasticsearch
-      - ELASTICSEARCH_PORT=9200
-      - ELASTICSEARCH_SERVICE_ACCOUNT_TOKEN=eyJ2ZXIiOiI4LjExLjAiLCJhZHIiOlsiMTcyLjMwLjAuNDo5MjAwIl0sImZnciI6ImUyMDNlOTRjYjljOTg3MjhlZmZiNzIxMWM1NmM1NWE2OTZmMGZjOGJjMTBmMzk2ZWJmMGEzYmExNmVhMWNlMTIiLCJrZXkiOiJKMC02eUlzQlF5N0dHRTJEd3BxZTpWUDQ0UmJxQlF2T0VzVEdzRFdYVmpBIn0=
-      - SERVER_NAME=kibana
     depends_on:
       - elasticsearch
+
+  kibana:
+    image: kibana:${ELASTIC_VERSION}
+    volumes:
+      - ./kibana/config/kibana.yml:/usr/share/kibana/config/kibana.yml:ro,Z
+    ports:
+      - 5601:5601
+    environment:
+      KIBANA_SYSTEM_PASSWORD: ${KIBANA_SYSTEM_PASSWORD:-}
     networks:
       - specific-group-services
+    depends_on:
+      - elasticsearch
 
-#    bin/elasticsearch-create-enrollment-token -s kibana
 networks:
   specific-group-services:
     driver: bridge
 
+volumes:
+  setup:
+  elasticsearch:
 
 #  eureka:
 #    build: eureka
