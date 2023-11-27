@@ -81,12 +81,15 @@ services:
       MONITORING_INTERNAL_PASSWORD: ${MONITORING_INTERNAL_PASSWORD:-}
       BEATS_SYSTEM_PASSWORD: ${BEATS_SYSTEM_PASSWORD:-}
     networks:
-      - specific-group-services
+      - elk
     depends_on:
       - elasticsearch
 
   elasticsearch:
-    image: elasticsearch:${ELASTIC_VERSION:-}
+    build:
+      context: elasticsearch/
+      args:
+        ELASTIC_VERSION: ${ELASTIC_VERSION}
     volumes:
       - ./elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro,Z
       - elasticsearch:/usr/share/elasticsearch/data:Z
@@ -96,17 +99,25 @@ services:
     environment:
       node.name: elasticsearch
       ES_JAVA_OPTS: -Xms512m -Xmx512m
+      # Bootstrap password.
+      # Used to initialize the keystore during the initial startup of
+      # Elasticsearch. Ignored on subsequent runs.
       ELASTIC_PASSWORD: ${ELASTIC_PASSWORD:-}
+      # Use single node discovery in order to disable production mode and avoid bootstrap checks.
+      # see: https://www.elastic.co/guide/en/elasticsearch/reference/current/bootstrap-checks.html
       discovery.type: single-node
     networks:
-      - specific-group-services
+      - elk
 
   logstash:
-    image: logstash:${ELASTIC_VERSION}
+    build:
+      context: logstash/
+      args:
+        ELASTIC_VERSION: ${ELASTIC_VERSION}
     volumes:
       - ./logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml
       - ./logstash/pipeline:/usr/share/logstash/pipeline
-      -  /mnt/c/temp/logs:/usr/share/logstash/logs
+      - /mnt/c/temp/logs:/usr/share/logstash/logs
     ports:
       - 5044:5044
       - 50000:50000/tcp
@@ -117,12 +128,15 @@ services:
       LS_JAVA_OPTS: -Xms256m -Xmx256m
       LOGSTASH_INTERNAL_PASSWORD: ${LOGSTASH_INTERNAL_PASSWORD:-}
     networks:
-      - specific-group-services
+      - elk
     depends_on:
       - elasticsearch
 
   kibana:
-    image: kibana:${ELASTIC_VERSION}
+    build:
+      context: kibana/
+      args:
+        ELASTIC_VERSION: ${ELASTIC_VERSION}
     volumes:
       - ./kibana/config/kibana.yml:/usr/share/kibana/config/kibana.yml:ro,Z
     ports:
@@ -130,12 +144,14 @@ services:
     environment:
       KIBANA_SYSTEM_PASSWORD: ${KIBANA_SYSTEM_PASSWORD:-}
     networks:
-      - specific-group-services
+      - elk
     depends_on:
       - elasticsearch
 
 networks:
   specific-group-services:
+    driver: bridge
+  elk:
     driver: bridge
 
 volumes:
