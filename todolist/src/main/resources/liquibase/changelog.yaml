@@ -1,0 +1,86 @@
+databaseChangeLog:
+
+  - changeSet:
+      id: createTaskTable
+      author: jan
+      changes:
+        - sql: CREATE TYPE status AS ENUM ('IN_PROGRESS', 'DONE', 'FAILED');
+        - createTable:
+            tableName: task
+            columns:
+              - column:
+                  name: task_id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: task_pk
+              - column:
+                  name: task_title
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: varchar(255)
+              - column:
+                  name: expire_at
+                  type: timestamp
+                  defaultValue: now()
+                  constraints:
+                    nullable: false
+              - column:
+                  name: task_status
+                  type: varchar(11)
+                  defaultValue: 'IN_PROGRESS'
+                  constraints:
+                    nullable: false
+              - column:
+                  name: group_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: timestamp
+                  defaultValue: now()
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamp
+  - changeSet:
+      id: createTaskGroupTable
+      author: jan
+      changes:
+        - createTable:
+            tableName: task_group
+            columns:
+              - column:
+                  name: group_id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: task_group_pk
+              - column:
+                  name: user_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: group_title
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: timestamp
+                  defaultValue: now()
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamp
