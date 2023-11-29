@@ -1,6 +1,75 @@
 version: "3.8"
 
 services:
+
+  eureka-service:
+    image: viktorsee0/eureka-service:latest
+    container_name: eureka-service
+    ports:
+      - "8761:8761"
+    networks:
+      - specific-group-services
+
+  gateway-service:
+    image: viktorsee0/gateway-service:latest
+    container_name: gateway-service
+    ports:
+      - "8079:8079"
+    depends_on:
+      - eureka-service
+    networks:
+      - specific-group-services
+
+  authentication-service:
+    image: viktorsee0/authentication-service:latest
+    container_name: authentication-service
+    ports:
+      - "9091:9091"
+    depends_on:
+      - eureka-service
+      - keycloak
+      - logstash
+    networks:
+      - specific-group-services
+
+  todolist-service:
+    image: viktorsee0/todolist-service:latest
+    container_name: todolist-service
+    ports:
+      - "9092:9092"
+    depends_on:
+      - eureka-service
+      - logstash
+      - ms-database
+    networks:
+      - specific-group-services
+
+  ms-database:
+    image: postgres:latest
+    container_name: ms-database
+    restart: on-failure
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    healthcheck:
+      test: pg_isready -d postgres
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+    ports:
+      - "5436:5432"
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+    volumes:
+      - ./ms-database:/docker-entrypoint-initdb.d
+      - ./pgdata:/var/lib/postgresql
+    networks:
+      - specific-group-services
+
   keycloak-postgres:
     image: postgres:latest
     container_name: keycloak-postgres
@@ -16,7 +85,7 @@ services:
       retries: 3
       start_period: 5s
     ports:
-      - ${KC_POSTGRES_PORT_MAPPING:-5435}:5432
+      - "5435:5432"
     deploy:
       resources:
         limits:
@@ -47,7 +116,7 @@ services:
     volumes:
       - ./keycloak/realm.json:/opt/keycloak/data/import/realm.json
     ports:
-      - 8282:8080
+      - "8282:8080"
     depends_on:
       keycloak-postgres:
         condition: service_healthy
@@ -57,6 +126,15 @@ services:
       interval: 30s
       retries: 3
       timeout: 5s
+    networks:
+      - specific-group-services
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - '5672:5672'
+      - '15672:15672'
     networks:
       - specific-group-services
 
@@ -81,7 +159,7 @@ services:
       MONITORING_INTERNAL_PASSWORD: ${MONITORING_INTERNAL_PASSWORD:-}
       BEATS_SYSTEM_PASSWORD: ${BEATS_SYSTEM_PASSWORD:-}
     networks:
-      - elk
+      - specific-group-services
     depends_on:
       - elasticsearch
 
@@ -94,22 +172,18 @@ services:
       - ./elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro,Z
       - elasticsearch:/usr/share/elasticsearch/data:Z
     ports:
-      - 9200:9200
-      - 9300:9300
+      - "9200:9200"
+      - "9300:9300"
     environment:
       node.name: elasticsearch
       ES_JAVA_OPTS: -Xms512m -Xmx512m
-      # Bootstrap password.
-      # Used to initialize the keystore during the initial startup of
-      # Elasticsearch. Ignored on subsequent runs.
       ELASTIC_PASSWORD: ${ELASTIC_PASSWORD:-}
-      # Use single node discovery in order to disable production mode and avoid bootstrap checks.
-      # see: https://www.elastic.co/guide/en/elasticsearch/reference/current/bootstrap-checks.html
       discovery.type: single-node
     networks:
-      - elk
+      - specific-group-services
 
   logstash:
+    container_name: logstash
     build:
       context: logstash/
       args:
@@ -119,16 +193,16 @@ services:
       - ./logstash/pipeline:/usr/share/logstash/pipeline
       - /mnt/c/temp/logs:/usr/share/logstash/logs
     ports:
-      - 5044:5044
-      - 50000:50000/tcp
-      - 50000:50000/udp
-      - 9600:9600
+      - "5044:5044"
+      - "50000:50000/tcp"
+      - "50000:50000/udp"
+      - "9600:9600"
     environment:
       LOG_LEVEL: debug
       LS_JAVA_OPTS: -Xms256m -Xmx256m
       LOGSTASH_INTERNAL_PASSWORD: ${LOGSTASH_INTERNAL_PASSWORD:-}
     networks:
-      - elk
+      - specific-group-services
     depends_on:
       - elasticsearch
 
@@ -144,35 +218,15 @@ services:
     environment:
       KIBANA_SYSTEM_PASSWORD: ${KIBANA_SYSTEM_PASSWORD:-}
     networks:
-      - elk
+      - specific-group-services
+
     depends_on:
       - elasticsearch
 
 networks:
   specific-group-services:
     driver: bridge
-  elk:
-    driver: bridge
 
 volumes:
   setup:
   elasticsearch:
-
-#  eureka:
-#    build: eureka
-#    container_name: eureka-service
-#    ports:
-#      - "8761:8761"
-#    environment:
-#      SERVER_PORT: "8761"
-#
-#  gateway:
-#    build: gateway
-#    container_name: gateway-service
-#    ports:
-#      - "8080:8080"
-#    environment:
-#      SERVER_PORT: "8080"
-#    depends_on:
-#      - eureka
-#      - keycloak

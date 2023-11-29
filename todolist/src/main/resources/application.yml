@@ -1,0 +1,46 @@
+server:
+  port: 9092
+
+spring:
+  application:
+    name: todolist-service
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://ms-database:5432/todolist
+    username: postgres
+    password: postgres
+  jpa:
+    show-sql: true
+  liquibase:
+    change-log: classpath:liquibase/changelog.yaml
+  rabbitmq:
+    host: rabbitmq
+    port: 5672
+    username: guest
+    password: guest
+    virtual-host: /
+
+eureka:
+  instance:
+    hostname: localhost
+  client:
+    registerWithEureka: true
+    fetchRegistry: true
+    serviceUrl:
+      defaultZone: http://eureka-service:8761/eureka
+
+amqp:
+  exchange:
+    task: task.topic
+  queue:
+    task: task.queue
+
+# Shows declaration of exchanges, queues, bindings, etc.
+logging:
+  level:
+    org:
+      springframework:
+        amqp:
+          rabbit:
+            core:
+              RabbitAdmin: DEBUG

@@ -3,19 +3,26 @@ server:
 
 spring:
   application:
-    name: eureka-service
-
-ribbon:
-  eureka:
-    enabled: false
+    name: eureka
 
 eureka:
-  instance:
-    hostname: localhost
   client:
-    register-with-eureka: false
-    fetch-registry: false
-    service-url:
-      defaultZone: http://${eureka.instance.hostname}:${server.port}/eureka
-  server:
-    wait-time-in-ms-when-sync-empty: 3000
+    registerWithEureka: false
+    fetchRegistry: false
+  instance:
+    preferIpAddress: true
+
+management:
+  endpoint:
+    gateway:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: gateway
+
+logging:
+  level:
+    org:
+      springframework:
+        security: DEBUG

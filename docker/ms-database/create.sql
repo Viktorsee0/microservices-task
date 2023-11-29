@@ -1,0 +1,2 @@
+CREATE DATABASE todolist;
+CREATE DATABASE rating_db;
