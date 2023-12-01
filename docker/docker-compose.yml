@@ -44,6 +44,18 @@ services:
     networks:
       - specific-group-services
 
+  rating-service:
+    image: viktorsee0/rating-service:latest
+    container_name: rating-service
+    ports:
+      - "9094:9094"
+    depends_on:
+      - eureka-service
+      - logstash
+      - ms-database
+    networks:
+      - specific-group-services
+
   scheduler-service:
     image: viktorsee0/scheduler-service:latest
     container_name: scheduler-service

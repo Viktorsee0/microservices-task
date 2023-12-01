@@ -1,0 +1,97 @@
+databaseChangeLog:
+
+  - changeSet:
+      id: createBadgeCardTable
+      author: viktor
+      changes:
+        - sql: CREATE TYPE badge_type AS ENUM ('BRONZE', 'SILVER', 'GOLD', 'FIRST_DONE');
+        - createTable:
+            tableName: badge_card
+            columns:
+              - column:
+                  name: badge_id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: badge_pk
+              - column:
+                  name: user_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+              - column:
+                  name: badge_timestamp
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: badge_type
+                  type: varchar(11)
+                  defaultValue: null
+  - changeSet:
+      id: createUserScoreTable
+      author: viktor
+      changes:
+        - createTable:
+            tableName: user_score
+            columns:
+              - column:
+                  name: user_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: user_score_pk
+              - column:
+                  name: username
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: score
+                  type: bigint
+                  defaultValue: 0
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: Timestamp
+                  defaultValue: now()
+                  constraints:
+                    nullable: false
+  - changeSet:
+      id: createTaskTable
+      author: viktor
+      changes:
+        - sql: CREATE TYPE status AS ENUM ('DONE', 'FAILED');
+        - createTable:
+            tableName: task
+            columns:
+              - column:
+                  name: task_id
+                  type: bigint
+                  autoIncrement: false
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: task_pk
+              - column:
+                  name: status
+                  type: varchar(6)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseTableName: task
+            baseColumnNames: user_id
+            referencedTableName: user_score
+            referencedColumnNames: user_id
+            constraintName: fk_task_user
+            onDelete: CASCADE
+            onUpdate: RESTRICT
