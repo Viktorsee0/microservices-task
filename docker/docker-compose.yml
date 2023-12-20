@@ -29,7 +29,7 @@ services:
       - "8079:8079"
     depends_on:
       - eureka-service
-      - keycloak
+      - authentication-service
     networks:
       - specific-group-services
 
@@ -42,6 +42,18 @@ services:
       - eureka-service
       - logstash
       - ms-database
+    networks:
+      - specific-group-services
+
+  authentication-service:
+    image: viktorsee0/authentication-service:latest
+    container_name: authentication-service
+    ports:
+      - "9091:9091"
+    depends_on:
+      - eureka-service
+      - logstash
+      - keycloak
     networks:
       - specific-group-services
 
@@ -70,35 +82,60 @@ services:
       - specific-group-services
 
   keycloak-postgres:
+    image: postgres:latest
     container_name: keycloak-postgres
-    image: postgres:13.0-alpine
-    ports:
-      - "5432:5432"
+    restart: on-failure
     environment:
-      - POSTGRES_DB=keycloak
-      - POSTGRES_USER=keycloak
-      - POSTGRES_PASSWORD=password
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    healthcheck:
+      test: pg_isready -d postgres
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+    ports:
+      - "5435:5432"
+    deploy:
+      resources:
+        limits:
+          memory: 256M
     networks:
       - specific-group-services
 
   keycloak:
+    image: quay.io/keycloak/keycloak:22.0.5
     container_name: keycloak
-    image: bitnami/keycloak:18.0.2-debian-11-r9
-    ports:
-      - '8000:8000'
     environment:
-      DB_VENDOR: POSTGRES
-      DB_ADDR: keycloak-postgres
-      DB_DATABASE: keycloak
-      DB_USER: keycloak
-      DB_PASSWORD: password
-      KEYCLOAK_HTTP_PORT: 8000
-      KEYCLOAK_ADMIN_USER: admin
+      KC_DB_URL: jdbc:postgresql://keycloak-postgres:5432/postgres
+      KC_DB_USERNAME: postgres
+      KC_DB_PASSWORD: postgres
+      KC_DB_SCHEMA: public
+      KC_FEATURES: preview
+      KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
+    command:
+      - start-dev
+      - --db postgres
+      - --hostname-strict-https false
+      - --hostname-strict false
+      - --proxy edge
+      - --http-enabled true
+      - --import-realm
     volumes:
-      - ./keycloak/realm-export.json:/opt/keycloak/data/import
+      - ./keycloak/realm.json:/opt/keycloak/data/import/realm.json
+    ports:
+      - "8080:8080"
     depends_on:
-      - keycloak-postgres
+      keycloak-postgres:
+        condition: service_healthy
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://0.0.0.0:8080/realms/master" ]
+      start_period: 10s
+      interval: 30s
+      retries: 3
+      timeout: 5s
     networks:
       - specific-group-services
 

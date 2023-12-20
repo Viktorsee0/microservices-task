@@ -37,7 +37,7 @@ public class UserController {
     @PostMapping("/auth")
     public ResponseEntity<Void> createUser(@RequestBody @Valid
                                                RegistrationRequestDTO userDTO) {
-        log.info("Registration a new user new {}", userDTO.getUsername());
+        log.info("Registration a new user: {}", userDTO.getUsername());
         userService.createUser(userDTO);
         return ResponseEntity.ok().build();
     }

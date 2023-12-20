@@ -20,12 +20,13 @@ spring:
 
 eureka:
   instance:
+    preferIpAddress: true
     hostname: localhost
   client:
     registerWithEureka: true
     fetchRegistry: true
     serviceUrl:
-      defaultZone: http://eureka-service:8761/eureka
+      defaultZone: http://eureka-service:8761/eureka/
 
 amqp:
   exchange:

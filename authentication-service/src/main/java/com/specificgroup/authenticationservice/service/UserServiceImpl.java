@@ -4,6 +4,7 @@ import com.specificgroup.authenticationservice.mapper.UserMapper;
 import com.specificgroup.authenticationservice.dto.RegistrationRequestDTO;
 import com.specificgroup.authenticationservice.dto.UserRequestDTO;
 import com.specificgroup.authenticationservice.dto.UserResponseDTO;
+import jakarta.ws.rs.core.Response;
 import lombok.RequiredArgsConstructor;
 import org.keycloak.admin.client.resource.UsersResource;
 import org.keycloak.representations.idm.UserRepresentation;
@@ -22,7 +23,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void createUser(RegistrationRequestDTO userDTO) {
         UserRepresentation userRepresentation = mapper.toRepresentation(userDTO);
-        usersResource.create(userRepresentation);
+        Response response = usersResource.create(userRepresentation);
     }
 
     @Override

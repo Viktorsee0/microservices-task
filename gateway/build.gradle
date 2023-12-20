@@ -6,7 +6,10 @@ plugins {
 
 group = 'com.specific-group'
 version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '17'
+
+java {
+    sourceCompatibility = '17'
+}
 
 configurations {
     compileOnly {
@@ -19,8 +22,10 @@ repositories {
 }
 
 ext {
-    set('springCloudVersion', "2022.0.4")
+    set('springCloudVersion', "2022.0.1")
 }
+
+
 
 dependencies {
     compileOnly 'org.projectlombok:lombok'

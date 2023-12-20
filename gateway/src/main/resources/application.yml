@@ -2,16 +2,16 @@ server:
   port: 8079
 spring:
   application:
-    name: gateway
-
+    name: gateway-service
   security:
     oauth2:
       resourceserver:
         jwt:
-          jwk-set-uri: http://keycloak:8282/realms/specific-group-realm/protocol/openid-connect/certs
-          issuer-uri: http://keycloak:8282/realms/specific-group-realm
-
+            issuer-uri: http://keycloak:8080/realms/specific-group-realm
   cloud:
+    discovery:
+      enabled: true
+
     gateway:
       discovery:
         locator:
@@ -20,21 +20,33 @@ spring:
       default-filters:
         - DedupeResponseHeader=Access-Control-Allow-Credentials Access-Control-Allow-Origin
       routes:
-        - id: authentication-service
-          uri: lb://authentication-service/
+        - id: rating-service
+          uri: lb://rating-service
           predicates:
-            - Path=/*/*/user/**
+            - Path=/api/v1/score/**
+
+        - id: todolist-service
+          uri: lb://todolist-service
+          predicates:
+            - Path=/api/v1/task/**
+            - Path=/api/v1/task-group/**
+
+        - id: authentication-service
+          uri: lb://authentication-service
+          predicates:
+            - Path=/api/v1/user/**
+
 eureka:
   instance:
     preferIpAddress: true
+    hostname: localhost
   client:
     registerWithEureka: true
     fetchRegistry: true
     serviceUrl:
       defaultZone: http://eureka-service:8761/eureka/
-
-management:
-  endpoints:
-    web:
-      exposure:
-        include: gateway
+logging:
+  level:
+    org:
+      springframework:
+        security: DEBUG
