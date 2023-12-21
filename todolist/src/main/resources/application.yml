@@ -22,11 +22,8 @@ spring:
 
 eureka:
   instance:
-    preferIpAddress: true
-    hostname: localhost
+    instance-id: ${spring.application.name}:${random.uuid}
   client:
-    registerWithEureka: true
-    fetchRegistry: true
     serviceUrl:
       defaultZone: http://eureka-service:8761/eureka
 

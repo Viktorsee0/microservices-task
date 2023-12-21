@@ -9,10 +9,18 @@ spring:
   datasource:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://ms-database:5432/rating_db
+#    url: jdbc:postgresql://localhost:5436/rating_db
     username: postgres
     password: postgres
   liquibase:
     change-log: classpath:liquibase/changelog.yml
+  rabbitmq:
+#    host: localhost
+    host: rabbitmq
+    port: 5672
+    username: guest
+    password: guest
+    virtual-host: /
 
 eureka:
   instance:
@@ -23,6 +31,7 @@ eureka:
     fetchRegistry: true
     serviceUrl:
       defaultZone: http://eureka-service:8761/eureka
+#      defaultZone: http://localhost:8761/eureka
 
 amqp:
   exchange:

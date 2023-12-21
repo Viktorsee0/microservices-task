@@ -28,8 +28,7 @@ spring:
         - id: todolist-service
           uri: lb://todolist-service
           predicates:
-            - Path=/api/v1/task/**
-            - Path=/api/v1/task-group/**
+            - Path=/api/v1/task-group/**,/api/v1/task/**
 
         - id: authentication-service
           uri: lb://authentication-service
@@ -37,16 +36,14 @@ spring:
             - Path=/api/v1/user/**
 
 eureka:
-  instance:
-    preferIpAddress: true
-    hostname: localhost
   client:
-    registerWithEureka: true
-    fetchRegistry: true
-    serviceUrl:
+    service-url:
       defaultZone: http://eureka-service:8761/eureka/
+    renewalIntervalInSecs: 10
+
 logging:
   level:
     org:
       springframework:
         security: DEBUG
+        cloud: DEBUG

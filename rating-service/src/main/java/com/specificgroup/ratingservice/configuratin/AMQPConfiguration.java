@@ -10,6 +10,8 @@ import org.springframework.amqp.core.ExchangeBuilder;
 import org.springframework.amqp.core.QueueBuilder;
 import org.springframework.amqp.core.TopicExchange;
 import org.springframework.amqp.rabbit.annotation.RabbitListenerConfigurer;
+import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
+import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -23,7 +25,7 @@ import org.springframework.messaging.handler.annotation.support.MessageHandlerMe
 public class AMQPConfiguration {
 
     @Bean
-    public TopicExchange taskTopicExchange(@Value("${amqp.exchange.task}") final String exchangeName) {
+    public TopicExchange taskTopicExchange(@Value("${amqp.exchange.task}") String exchangeName) {
         return ExchangeBuilder.topicExchange(exchangeName).durable(true).build();
     }
 
@@ -33,14 +35,12 @@ public class AMQPConfiguration {
     }
 
     @Bean
-    public Queue TaskQueue(
-            @Value("${amqp.queue.task}") final String queueName) {
+    public Queue taskQueue(@Value("${amqp.queue.task}") String queueName) {
         return QueueBuilder.durable(queueName).build();
     }
 
     @Bean
-    public Binding correctAttemptsBinding(final Queue taskQueue,
-                                          final TopicExchange taskExchange) {
+    public Binding correctAttemptsBinding(Queue taskQueue, TopicExchange taskExchange) {
         return BindingBuilder.bind(taskQueue)
                 .to(taskExchange)
                 .with("task.done");
@@ -48,19 +48,28 @@ public class AMQPConfiguration {
 
     @Bean
     public MessageHandlerMethodFactory messageHandlerMethodFactory() {
-        DefaultMessageHandlerMethodFactory factory = new
-                DefaultMessageHandlerMethodFactory();
-        final MappingJackson2MessageConverter jsonConverter =
-                new MappingJackson2MessageConverter();
-        jsonConverter.getObjectMapper().registerModule(
-                new ParameterNamesModule(JsonCreator.Mode.PROPERTIES));
+        DefaultMessageHandlerMethodFactory factory = new DefaultMessageHandlerMethodFactory();
+        MappingJackson2MessageConverter jsonConverter = new MappingJackson2MessageConverter();
+        jsonConverter.getObjectMapper().registerModule(new ParameterNamesModule(JsonCreator.Mode.PROPERTIES));
         factory.setMessageConverter(jsonConverter);
         return factory;
     }
 
     @Bean
-    public RabbitListenerConfigurer rabbitListenerConfigurer(
-            final MessageHandlerMethodFactory messageHandlerMethodFactory) {
+    public RabbitListenerConfigurer rabbitListenerConfigurer(MessageHandlerMethodFactory messageHandlerMethodFactory) {
         return (c) -> c.setMessageHandlerMethodFactory(messageHandlerMethodFactory);
+    }
+
+    @Bean
+    public ConnectionFactory connectionFactory(@Value("${spring.rabbitmq.host}") String rabbitmqHost,
+                                               @Value("${spring.rabbitmq.port}") int rabbitmqPort,
+                                               @Value("${spring.rabbitmq.username}") String rabbitmqUsername,
+                                               @Value("${spring.rabbitmq.password}") String rabbitmqPassword) {
+        CachingConnectionFactory connectionFactory = new CachingConnectionFactory();
+        connectionFactory.setHost(rabbitmqHost);
+        connectionFactory.setPort(rabbitmqPort);
+        connectionFactory.setUsername(rabbitmqUsername);
+        connectionFactory.setPassword(rabbitmqPassword);
+        return connectionFactory;
     }
 }

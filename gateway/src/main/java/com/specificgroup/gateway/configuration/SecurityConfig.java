@@ -18,8 +18,7 @@ public class SecurityConfig {
         return httpSecurity
                 .authorizeExchange()
                 .pathMatchers("/actuator/health/**",
-                        "/api/v1/user/auth/**",
-                        "**/api/v1/user/auth/**"
+                        "/api/v1/user/auth/**"
                 ).permitAll()
                 .anyExchange().authenticated()
                 .and()
