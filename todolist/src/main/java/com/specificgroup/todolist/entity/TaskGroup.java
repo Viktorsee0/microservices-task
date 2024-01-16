@@ -35,7 +35,6 @@ public final class TaskGroup {
     @OneToMany(mappedBy = "taskGroup", cascade = CascadeType.REMOVE)
     private List<Task> tasks;
 
-
     @Column(name = "created_at")
     @CreationTimestamp
     private final Timestamp createdAt;
