@@ -5,6 +5,7 @@ import com.specificgroup.todolist.entity.TaskGroup;
 import com.specificgroup.todolist.exception.NotFoundException;
 
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Provide crud for TaskGroup entity
@@ -41,4 +42,5 @@ public interface TaskGroupService {
      */
     void deleteBy(Long id);
 
+    List<TaskGroup> getByUserId(UUID userId);
 }

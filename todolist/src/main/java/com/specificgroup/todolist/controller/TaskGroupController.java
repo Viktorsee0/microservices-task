@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 /**
  * * This controller provide api for groups
@@ -37,6 +38,18 @@ public final class TaskGroupController {
 //            log.info("output: " + group);
 //            System.out.println("-------------------------------------------------------------------------------------");
         return new ResponseEntity<>(group, HttpStatus.OK);
+    }
+
+    @GetMapping("{userId}")
+    public ResponseEntity<List<TaskGroup>> getGroupByUserId(@Valid @PathVariable UUID userId) {
+//        System.out.println("-------------------------------------------------------------------------------------");
+//        log.info("input: " + id);
+//        System.out.println("-------------------------------------------------------------------------------------");
+        List<TaskGroup> groups = taskGroupService.getByUserId(userId);
+//            System.out.println("-------------------------------------------------------------------------------------");
+//            log.info("output: " + group);
+//            System.out.println("-------------------------------------------------------------------------------------");
+        return new ResponseEntity<>(groups, HttpStatus.OK);
     }
 
     /**
