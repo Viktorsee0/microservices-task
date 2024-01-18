@@ -94,7 +94,7 @@ class TaskControllerTest {
         given(taskService.getAll()).willReturn(expectedTasks);
 
         // when
-        MockHttpServletResponse response = mvc.perform(get("/api/v1/task/")).andReturn().getResponse();
+        MockHttpServletResponse response = mvc.perform(get("/api/v1/task")).andReturn().getResponse();
 
         // then
         then(response.getStatus()).isEqualTo(HttpStatus.OK.value());
@@ -129,7 +129,7 @@ class TaskControllerTest {
 
         //when
         MockHttpServletResponse response = mvc
-                .perform(post("/api/v1/task/?groupId=1").contentType(MediaType.APPLICATION_JSON).content(taskJacksonTester.write(task).getJson()))
+                .perform(post("/api/v1/task?groupId=1").contentType(MediaType.APPLICATION_JSON).content(taskJacksonTester.write(task).getJson()))
                 .andReturn()
                 .getResponse();
 
@@ -168,7 +168,7 @@ class TaskControllerTest {
 
         //when
         MockHttpServletResponse response = mvc
-                .perform(put("/api/v1/task/").contentType(MediaType.APPLICATION_JSON).content(taskJacksonTester.write(task).getJson()))
+                .perform(put("/api/v1/task").contentType(MediaType.APPLICATION_JSON).content(taskJacksonTester.write(task).getJson()))
                 .andReturn()
                 .getResponse();
 
@@ -212,7 +212,7 @@ class TaskControllerTest {
     void deleteTaskById() throws Exception {
         // when
         MockHttpServletResponse response = mvc.perform(
-                        delete("/api/v1/task/?id=1"))
+                        delete("/api/v1/task?id=1"))
                 .andReturn().getResponse();
         // then
         then(response.getStatus()).isEqualTo(HttpStatus.NO_CONTENT.value());

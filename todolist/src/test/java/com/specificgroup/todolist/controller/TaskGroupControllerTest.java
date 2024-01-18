@@ -92,7 +92,7 @@ class TaskGroupControllerTest {
         given(taskGroupService.getAll()).willReturn(expectedGroups);
 
         // when
-        MockHttpServletResponse response = mvc.perform(get("/api/v1/task-group/")).andReturn().getResponse();
+        MockHttpServletResponse response = mvc.perform(get("/api/v1/task-group")).andReturn().getResponse();
 
         // then
         then(response.getStatus()).isEqualTo(HttpStatus.OK.value());
@@ -124,7 +124,7 @@ class TaskGroupControllerTest {
 
         //when
         MockHttpServletResponse response = mvc
-                .perform(post("/api/v1/task-group/").contentType(MediaType.APPLICATION_JSON).content(groupJacksonTester.write(group).getJson()))
+                .perform(post("/api/v1/task-group").contentType(MediaType.APPLICATION_JSON).content(groupJacksonTester.write(group).getJson()))
                 .andReturn()
                 .getResponse();
 
@@ -159,7 +159,7 @@ class TaskGroupControllerTest {
 
         //when
         MockHttpServletResponse response = mvc
-                .perform(put("/api/v1/task-group/").contentType(MediaType.APPLICATION_JSON).content(groupJacksonTester.write(group).getJson()))
+                .perform(put("/api/v1/task-group").contentType(MediaType.APPLICATION_JSON).content(groupJacksonTester.write(group).getJson()))
                 .andReturn()
                 .getResponse();
 
@@ -172,7 +172,7 @@ class TaskGroupControllerTest {
     void deleteGroupById() throws Exception {
         // when
         MockHttpServletResponse response = mvc.perform(
-                        delete("/api/v1/task-group/?id=1"))
+                        delete("/api/v1/task-group?id=1"))
                 .andReturn().getResponse();
         // then
         then(response.getStatus()).isEqualTo(HttpStatus.NO_CONTENT.value());

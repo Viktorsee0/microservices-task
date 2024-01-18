@@ -40,8 +40,8 @@ public final class TaskGroupController {
         return new ResponseEntity<>(group, HttpStatus.OK);
     }
 
-    @GetMapping
-    public ResponseEntity<List<TaskGroup>> getGroupsByUserId(@Valid @RequestParam UUID userId) {
+    @GetMapping("/user-groups/{userId}")
+    public ResponseEntity<List<TaskGroup>> getGroupsByUserId(@Valid @PathVariable UUID userId) {
 //        System.out.println("-------------------------------------------------------------------------------------");
 //        log.info("input: " + id);
 //        System.out.println("-------------------------------------------------------------------------------------");
