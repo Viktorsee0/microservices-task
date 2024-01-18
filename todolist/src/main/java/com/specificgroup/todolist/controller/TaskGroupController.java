@@ -18,7 +18,7 @@ import java.util.UUID;
 @Slf4j
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("api/v1/task-group/")
+@RequestMapping("api/v1/task-group")
 public final class TaskGroupController {
     private final TaskGroupService taskGroupService;
 
@@ -28,7 +28,7 @@ public final class TaskGroupController {
      * @param id id of entity
      * @return entity if exists
      */
-    @GetMapping("{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<TaskGroup> getGroupBy(@Valid @PathVariable Long id) {
 //        System.out.println("-------------------------------------------------------------------------------------");
 //        log.info("input: " + id);
@@ -40,8 +40,8 @@ public final class TaskGroupController {
         return new ResponseEntity<>(group, HttpStatus.OK);
     }
 
-    @GetMapping("{userId}")
-    public ResponseEntity<List<TaskGroup>> getGroupByUserId(@Valid @PathVariable UUID userId) {
+    @GetMapping
+    public ResponseEntity<List<TaskGroup>> getGroupsByUserId(@Valid @RequestParam UUID userId) {
 //        System.out.println("-------------------------------------------------------------------------------------");
 //        log.info("input: " + id);
 //        System.out.println("-------------------------------------------------------------------------------------");

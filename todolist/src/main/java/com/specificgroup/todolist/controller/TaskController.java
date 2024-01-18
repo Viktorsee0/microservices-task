@@ -17,7 +17,7 @@ import java.util.List;
 @Slf4j
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("api/v1/task/")
+@RequestMapping("api/v1/task")
 public final class TaskController {
     private final TaskService taskService;
 
@@ -27,7 +27,7 @@ public final class TaskController {
      * @param id id of entity
      * @return entity if exists
      */
-    @GetMapping("{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<Task> getTaskBy(@Valid @PathVariable Long id) {
 //        log.info("input: " + id);
         Task task = taskService.getBy(id);
@@ -83,7 +83,7 @@ public final class TaskController {
      * @param id of done task
      * @return done task
      */
-    @PutMapping("done/{id}")
+    @PutMapping("/done/{id}")
     public ResponseEntity<Task> doneTask(@Valid @PathVariable Long id) {
         Task doneTask = taskService.doneTask(id);
         return new ResponseEntity<>(doneTask, HttpStatus.OK);
