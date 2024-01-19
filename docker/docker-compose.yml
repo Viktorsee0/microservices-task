@@ -2,7 +2,8 @@ version: "3.8"
 
 services:
   frontend:
-    image: todolist-frontend:1.0
+    image: viktorsee0/todolist-frontend:1.0
+    container_name: todolist-frontend
     ports:
       - '3000:80'
     networks:
