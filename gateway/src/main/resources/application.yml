@@ -12,16 +12,6 @@ spring:
     discovery:
       enabled: true
     gateway:
-      globalcors:
-        corsConfigurations:
-          '[/**]':
-            allowedOrigins: "http://localhost:3000"
-            allowedHeaders: "*"
-            allowedMethods:
-              - GET
-              - POST
-              - PUT
-              - DELETE
       discovery:
         locator:
           enabled: true
@@ -54,5 +44,4 @@ logging:
   level:
     org:
       springframework:
-        security: DEBUG
         cloud: DEBUG

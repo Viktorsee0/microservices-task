@@ -43,7 +43,6 @@ public final class TaskController {
     @GetMapping
     public ResponseEntity<List<Task>> getAllTasks() {
         List<Task> tasks = taskService.getAll();
-        log.info(tasks.toString());
         return new ResponseEntity<>(tasks, HttpStatus.OK);
     }
 
@@ -56,9 +55,7 @@ public final class TaskController {
      */
     @PostMapping
     public ResponseEntity<Task> createTask(@Valid @RequestBody Task task, @RequestParam Long groupId) {
-        log.info("input: " + task.toString());
         Task savedTask = taskService.save(task, groupId);
-        log.info("output: " + savedTask.toString());
         return new ResponseEntity<>(savedTask, HttpStatus.OK);
 
     }
@@ -71,9 +68,7 @@ public final class TaskController {
      */
     @PutMapping
     public ResponseEntity<Task> updateTask(@Valid @RequestBody Task task) {
-        log.info("input: " + task.toString());
         Task updatedTask = taskService.update(task);
-            log.info("output: " + updatedTask.toString());
         return new ResponseEntity<>(updatedTask, HttpStatus.OK);
     }
 

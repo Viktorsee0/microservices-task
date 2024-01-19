@@ -32,7 +32,6 @@ public final class TaskGroupController {
     public ResponseEntity<TaskGroup> getGroupBy(@Valid @PathVariable Long id) {
         log.info("input: " + id);
         TaskGroup group = taskGroupService.getBy(id);
-        log.info("output: " + group);
         return new ResponseEntity<>(group, HttpStatus.OK);
     }
 
@@ -40,7 +39,6 @@ public final class TaskGroupController {
     public ResponseEntity<List<TaskGroup>> getGroupsByUserId(@Valid @PathVariable UUID userId) {
         log.info("input: " + userId);
         List<TaskGroup> groups = taskGroupService.getByUserId(userId);
-        log.info("output: " + groups);
         return new ResponseEntity<>(groups, HttpStatus.OK);
     }
 
@@ -52,7 +50,6 @@ public final class TaskGroupController {
     @GetMapping
     public ResponseEntity<List<TaskGroup>> getAllGroups() {
         List<TaskGroup> groups = taskGroupService.getAll();
-        log.info("output: " + groups);
         return new ResponseEntity<>(groups, HttpStatus.OK);
     }
 
@@ -64,9 +61,7 @@ public final class TaskGroupController {
      */
     @PostMapping
     public ResponseEntity<TaskGroup> createGroup(@Valid @RequestBody TaskGroup group) {
-        log.info(group.toString());
         TaskGroup savedGroup = taskGroupService.save(group);
-        log.info(savedGroup.toString());
         return new ResponseEntity<>(savedGroup, HttpStatus.OK);
     }
 
@@ -78,9 +73,7 @@ public final class TaskGroupController {
      */
     @PutMapping
     public ResponseEntity<TaskGroup> updateGroup(@Valid @RequestBody TaskGroup group) {
-        log.info(group.toString());
         TaskGroup updatedGroup = taskGroupService.update(group);
-        log.info(updatedGroup.toString());
         return new ResponseEntity<>(updatedGroup, HttpStatus.OK);
     }
 

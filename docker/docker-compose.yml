@@ -8,6 +8,8 @@ services:
       - '3000:80'
     networks:
       - specific-group-services
+    depends_on:
+      - keycloak
 
   eureka-service:
     image: viktorsee0/eureka-service:latest
