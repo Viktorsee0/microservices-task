@@ -29,7 +29,7 @@ public final class TaskController {
      */
     @GetMapping("/{id}")
     public ResponseEntity<Task> getTaskBy(@Valid @PathVariable Long id) {
-//        log.info("input: " + id);
+        log.info("input: " + id);
         Task task = taskService.getBy(id);
         return new ResponseEntity<>(task, HttpStatus.OK);
 
@@ -43,7 +43,7 @@ public final class TaskController {
     @GetMapping
     public ResponseEntity<List<Task>> getAllTasks() {
         List<Task> tasks = taskService.getAll();
-//        log.info(tasks.toString());
+        log.info(tasks.toString());
         return new ResponseEntity<>(tasks, HttpStatus.OK);
     }
 
@@ -56,9 +56,9 @@ public final class TaskController {
      */
     @PostMapping
     public ResponseEntity<Task> createTask(@Valid @RequestBody Task task, @RequestParam Long groupId) {
-//        log.info("input: " + task.toString());
+        log.info("input: " + task.toString());
         Task savedTask = taskService.save(task, groupId);
-//        log.info("output: " + savedTask.toString());
+        log.info("output: " + savedTask.toString());
         return new ResponseEntity<>(savedTask, HttpStatus.OK);
 
     }
@@ -71,9 +71,9 @@ public final class TaskController {
      */
     @PutMapping
     public ResponseEntity<Task> updateTask(@Valid @RequestBody Task task) {
-//        log.info("input: " + task.toString());
+        log.info("input: " + task.toString());
         Task updatedTask = taskService.update(task);
-//            log.info("output: " + updatedTask.toString());
+            log.info("output: " + updatedTask.toString());
         return new ResponseEntity<>(updatedTask, HttpStatus.OK);
     }
 
@@ -98,7 +98,7 @@ public final class TaskController {
      */
     @DeleteMapping
     public ResponseEntity<Task> deleteTaskBy(@Valid @RequestParam Long id) {
-//        log.info("input: " + id);
+        log.info("input: " + id);
         taskService.deleteBy(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }

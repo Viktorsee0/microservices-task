@@ -30,25 +30,17 @@ public final class TaskGroupController {
      */
     @GetMapping("/{id}")
     public ResponseEntity<TaskGroup> getGroupBy(@Valid @PathVariable Long id) {
-//        System.out.println("-------------------------------------------------------------------------------------");
-//        log.info("input: " + id);
-//        System.out.println("-------------------------------------------------------------------------------------");
+        log.info("input: " + id);
         TaskGroup group = taskGroupService.getBy(id);
-//            System.out.println("-------------------------------------------------------------------------------------");
-//            log.info("output: " + group);
-//            System.out.println("-------------------------------------------------------------------------------------");
+        log.info("output: " + group);
         return new ResponseEntity<>(group, HttpStatus.OK);
     }
 
     @GetMapping("/user-groups/{userId}")
     public ResponseEntity<List<TaskGroup>> getGroupsByUserId(@Valid @PathVariable UUID userId) {
-//        System.out.println("-------------------------------------------------------------------------------------");
-//        log.info("input: " + id);
-//        System.out.println("-------------------------------------------------------------------------------------");
+        log.info("input: " + userId);
         List<TaskGroup> groups = taskGroupService.getByUserId(userId);
-//            System.out.println("-------------------------------------------------------------------------------------");
-//            log.info("output: " + group);
-//            System.out.println("-------------------------------------------------------------------------------------");
+        log.info("output: " + groups);
         return new ResponseEntity<>(groups, HttpStatus.OK);
     }
 
@@ -60,11 +52,7 @@ public final class TaskGroupController {
     @GetMapping
     public ResponseEntity<List<TaskGroup>> getAllGroups() {
         List<TaskGroup> groups = taskGroupService.getAll();
-//        System.out.println("-------------------------------------------------------------------------------------");
-//        for (TaskGroup group : groups) {
-//            log.info(group.toString());
-//        }
-//        System.out.println("-------------------------------------------------------------------------------------");
+        log.info("output: " + groups);
         return new ResponseEntity<>(groups, HttpStatus.OK);
     }
 
@@ -76,13 +64,9 @@ public final class TaskGroupController {
      */
     @PostMapping
     public ResponseEntity<TaskGroup> createGroup(@Valid @RequestBody TaskGroup group) {
-//        System.out.println("-------------------------------------------------------------------------------------");
-//        log.info(group.toString());
-//        System.out.println("-------------------------------------------------------------------------------------");
+        log.info(group.toString());
         TaskGroup savedGroup = taskGroupService.save(group);
-//        System.out.println("-------------------------------------------------------------------------------------");
-//        log.info(savedGroup.toString());
-//        System.out.println("-------------------------------------------------------------------------------------");
+        log.info(savedGroup.toString());
         return new ResponseEntity<>(savedGroup, HttpStatus.OK);
     }
 
@@ -94,13 +78,9 @@ public final class TaskGroupController {
      */
     @PutMapping
     public ResponseEntity<TaskGroup> updateGroup(@Valid @RequestBody TaskGroup group) {
-//        System.out.println("-------------------------------------------------------------------------------------");
-//        log.info(group.toString());
-//        System.out.println("-------------------------------------------------------------------------------------");
+        log.info(group.toString());
         TaskGroup updatedGroup = taskGroupService.update(group);
-//            System.out.println("-------------------------------------------------------------------------------------");
-//            log.info(updatedGroup.toString());
-//            System.out.println("-------------------------------------------------------------------------------------");
+        log.info(updatedGroup.toString());
         return new ResponseEntity<>(updatedGroup, HttpStatus.OK);
     }
 
@@ -112,9 +92,7 @@ public final class TaskGroupController {
      */
     @DeleteMapping
     public ResponseEntity<TaskGroup> deleteGroupBy(@Valid @RequestParam Long id) {
-//        System.out.println("-------------------------------------------------------------------------------------");
-//        log.info("input: " + id);
-//        System.out.println("-------------------------------------------------------------------------------------");
+        log.info("input: " + id);
         taskGroupService.deleteBy(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }

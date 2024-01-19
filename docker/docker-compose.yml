@@ -1,6 +1,12 @@
 version: "3.8"
 
 services:
+  frontend:
+    image: todolist-frontend:1.0
+    ports:
+      - '3000:80'
+    networks:
+      - specific-group-services
 
   eureka-service:
     image: viktorsee0/eureka-service:latest
